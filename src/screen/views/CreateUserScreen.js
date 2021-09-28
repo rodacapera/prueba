@@ -9,11 +9,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import firebase from '../../database/firebase';
+import firestore from '@react-native-firebase/firestore';
 
-// import {collection, query, where} from 'firebase/firestore';
-
-export default function CreateUserScreen() {
+export default function CreateUserScreen(props) {
   const [state, setState] = useState({
     name: '',
     lastName: '',
@@ -30,17 +28,25 @@ export default function CreateUserScreen() {
 
   const addNewUser = async () => {
     console.log('state', state);
-    const res = firebase.db.collection('users').add({
-      name: state.name,
-      lastName: state.lastName,
-      address: state.address,
-      city: state.city,
-      latitude: state.latitude,
-      longitude: state.longitude,
-      stateGeo: state.stateGeo,
-    });
-    console.log('scsccssscscs', res);
+    firestore()
+      .collection('users')
+      .add({
+        name: state.name,
+        lastName: state.lastName,
+        address: state.address,
+        city: state.city,
+        latitude: state.latitude,
+        longitude: state.longitude,
+        stateGeo: state.stateGeo,
+      })
+      .then(() => {
+        console.log('User added!');
+      });
   };
+
+  useEffect(() => {
+    console.log(props);
+  });
 
   return (
     <ScrollView>
@@ -104,10 +110,20 @@ export default function CreateUserScreen() {
           </View>
         </View>
         <View>
-          {/* <Button title="Save user" color="#841584" /> */}
           <TouchableOpacity style={styles.buttonDefault} onPress={addNewUser}>
-            <Text style={styles.textButton}>Press Here</Text>
+            <Text style={styles.textButton}>Save user</Text>
           </TouchableOpacity>
+        </View>
+        <View>
+          <Button
+            title="List users"
+            color="#000"
+            onPress={() =>
+              props.navigation.navigate('UserList', {
+                names: ['Brent', 'Satya', 'Michaś'],
+              })
+            }
+          />
         </View>
       </View>
     </ScrollView>
