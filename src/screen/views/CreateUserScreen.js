@@ -60,7 +60,7 @@ export default function CreateUserScreen(props) {
     }
   };
 
-  const handleEditUser = id => {
+  const handleEditUser = (id, inactive) => {
     console.log('edit user id:', id);
     firestore()
       .collection('users')
@@ -73,7 +73,7 @@ export default function CreateUserScreen(props) {
         latitude: state.latitude,
         longitude: state.longitude,
         stateGeo: state.stateGeo,
-        state: state ? state : 'Activo',
+        state: inactive ? inactive : 'Activo',
       })
       .then(() => {
         console.log('User modified!');
@@ -199,8 +199,8 @@ export default function CreateUserScreen(props) {
           {data && (
             <TouchableOpacity
               style={styles.buttonDefault}
-              onPress={() => props.navigation.navigate('UserList')}>
-              <Text style={styles.textButton}>List users</Text>
+              onPress={() => handleDeleteUser(data.id)}>
+              <Text style={styles.textButton}>Delete</Text>
             </TouchableOpacity>
           )}
         </View>
