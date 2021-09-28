@@ -21,34 +21,47 @@ export default function CreateUserScreen(props) {
     longitude: '',
     stateGeo: '',
   });
-  const {data} = props.route.params ? props.route.params : '';
-
+  const {data} = props.route.params ? props.route.params : false;
+  const [textError, setTextError] = useState(false);
   const handleChangeText = (name, value) => {
-    console.log(value);
     setState({...state, [name]: value});
+    setTextError(false);
   };
 
   const handleAddNewUser = async () => {
     console.log('state', state);
-    firestore()
-      .collection('users')
-      .add({
-        name: state.name,
-        lastName: state.lastName,
-        address: state.address,
-        city: state.city,
-        latitude: state.latitude,
-        longitude: state.longitude,
-        stateGeo: state.stateGeo,
-      })
-      .then(() => {
-        console.log('User added!');
-      });
+    if (
+      state.name &&
+      state.lastName &&
+      state.city &&
+      state.latitude &&
+      state.longitude &&
+      state.stateGeo
+    ) {
+      firestore()
+        .collection('users')
+        .add({
+          name: state.name,
+          lastName: state.lastName,
+          address: state.address,
+          city: state.city,
+          latitude: state.latitude,
+          longitude: state.longitude,
+          stateGeo: state.stateGeo,
+          state: 'Activo',
+        })
+        .then(() => {
+          console.log('User added!');
+          props.navigation.navigate('UserList');
+        });
+    } else {
+      console.log('incompleto');
+      setTextError(true);
+    }
   };
 
   const handleEditUser = id => {
     console.log('edit user id:', id);
-    console.log(state);
     firestore()
       .collection('users')
       .doc(id)
@@ -60,9 +73,24 @@ export default function CreateUserScreen(props) {
         latitude: state.latitude,
         longitude: state.longitude,
         stateGeo: state.stateGeo,
+        state: state ? state : 'Activo',
       })
       .then(() => {
         console.log('User modified!');
+        props.navigation.navigate('UserList');
+      });
+  };
+  const handleDeleteUser = id => {
+    handleEditUser(id, 'Inactivo');
+    console.log('edit user id:', id);
+    console.log(state);
+    firestore()
+      .collection('users')
+      .doc(id)
+      .delete()
+      .then(() => {
+        console.log('User deleted!');
+        props.navigation.navigate('UserList');
       });
   };
 
@@ -70,12 +98,22 @@ export default function CreateUserScreen(props) {
   //   console.log('cascsc');
   // }
   useEffect(() => {
-    console.log('uuuuu', props);
+    // console.log('uuuuu', props);
     // console.log('data', props.params.data);
     // data && handleInsertUserData();
-    // console.log(data);
-    setState(data);
-  }, [data, props]);
+    // console.log('data', data);
+    data
+      ? setState(data)
+      : setState({
+          name: '',
+          lastName: '',
+          address: '',
+          city: '',
+          latitude: '',
+          longitude: '',
+          stateGeo: '',
+        });
+  }, [data]);
 
   return (
     <ScrollView>
@@ -145,7 +183,12 @@ export default function CreateUserScreen(props) {
             />
           </View>
         </View>
-        <View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.textError}>
+            {textError && 'Todos los campos son obligatorios'}
+          </Text>
+        </View>
+        <View style={styles.containerButtons}>
           <TouchableOpacity
             style={styles.buttonDefault}
             onPress={data ? () => handleEditUser(data.id) : handleAddNewUser}>
@@ -153,13 +196,20 @@ export default function CreateUserScreen(props) {
               {data ? 'Edit user' : 'Save user'}
             </Text>
           </TouchableOpacity>
+          {data && (
+            <TouchableOpacity
+              style={styles.buttonDefault}
+              onPress={() => props.navigation.navigate('UserList')}>
+              <Text style={styles.textButton}>List users</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View>
           <Button
-            title="List users"
+            title={data ? 'Go to Home' : 'List users'}
             color="#000"
             onPress={() =>
-              props.navigation.navigate('UserList', {
+              props.navigation.navigate(data ? 'Home' : 'UserList', {
                 names: ['Brent', 'Satya', 'Michaś'],
               })
             }
@@ -171,6 +221,14 @@ export default function CreateUserScreen(props) {
 }
 
 const styles = StyleSheet.create({
+  textError: {
+    color: 'red',
+    paddingLeft: 20,
+  },
+  containerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   formContainer: {
     alignItems: 'flex-start',
     padding: 20,
@@ -181,6 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   buttonDefault: {
+    width: 150,
     alignItems: 'center',
     backgroundColor: '#1E86CC',
     padding: 10,

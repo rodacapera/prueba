@@ -80,11 +80,16 @@ export default function UserList(props) {
           />
         )}
       </View>
-      <View>
+      <View style={styles.containerButtons}>
         <TouchableOpacity
           style={styles.buttonDefault}
           onPress={() => props.navigation.navigate('Home')}>
           <Text style={styles.textButton}>Go to Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonDefault}
+          onPress={() => props.navigation.navigate('CreateUserScreen')}>
+          <Text style={styles.textButton}>Create new user</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -92,6 +97,10 @@ export default function UserList(props) {
 }
 
 const styles = StyleSheet.create({
+  containerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   formContainer: {
     padding: 20,
   },
@@ -101,6 +110,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   buttonDefault: {
+    width: 150,
     alignItems: 'center',
     backgroundColor: '#1E86CC',
     padding: 10,
