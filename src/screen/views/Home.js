@@ -1,8 +1,10 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {Marker} from 'react-native-maps';
 
 export default function Home() {
+  // const markers =
   return (
     <View style={styles.container}>
       <MapView
@@ -15,6 +17,14 @@ export default function Home() {
           longitudeDelta: 0.0121,
         }}
       />
+      {/* {this.state.markers.map((marker, index) => (
+        <Marker
+          key={index}
+          coordinate={marker.latlng}
+          title={marker.title}
+          description={marker.description}
+        />
+      ))} */}
     </View>
   );
 }

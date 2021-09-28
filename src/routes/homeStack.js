@@ -13,7 +13,7 @@ const MyStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="CrateUserScreen"
+        name="CreateUserScreen"
         component={CrateUserScreen}
         options={{
           headerTitle: 'Crear usuario',
